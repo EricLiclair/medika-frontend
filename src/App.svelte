@@ -1,55 +1,73 @@
 <script>
     import TableRow from './TableRow.svelte';
-	let products=[];
-    let url = 'https://port-8000-mdkbzr-diliga8356426146.codeanyapp.com/api/v1/search/Atriplex/';
-    fetch(url).then((res) => res.json()).then((data) => {
-        console.log(data)
-        products = [...data]
-    })
+    import AddProduct from './AddProduct.svelte';
+
+    import {products, isLoading} from './store.js'
+
+    let url = 'https://port-8000-mdkbzr-diliga8356426146.codeanyapp.com/api/v1/products';
+    const getProducts = () => {
+        isLoading.set(true);
+        fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+            isLoading.set(false);
+            products.set(data);
+        })
+        .catch((err) => {
+            console.log(err);
+            isLoading.set(false);
+        })
+    }
+    getProducts();
 </script>
 
 <main>
-    <table style="text-align: left; border: solid 1px black;">
+    <table>
         <tr>
+            <th>Id</th>
             <th>Name</th>
             <th>Price</th>
             <th>Quantity</th>
             <th>Tools</th>
         </tr>
-    {#each products as product (product.id)}
-        <TableRow {product}/>
-    {/each}
+    {#if $products.length > 0}
+        {#each $products as product (product.id)}
+            <TableRow {product}/>
+        {/each}
+    {:else if $isLoading}
+        <p>Loading...</p>
+    {:else}
+        <p>No products</p>
+    {/if}
     </table>
+    <br/>
 </main>
+<AddProduct />
 
 <style>
+    main {
+        overflow-y: scroll;
+        max-height: 450px;
+    }
     table {
     font-family: Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 60%;
+    width: 100%;
     }
 
-    table th {
-    border: 1px solid #ddd;
-    padding: 8px;
-    }
-
-    table th {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    table tr th {
+    padding: 1rem;
     text-align: left;
     background-color: #04AA6D;
+    border: solid 1px #04AA6D;
     color: white;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0px;
+    z-index: 1;
     }
 	main {
 		text-align: center;
-		padding: 1em;
 		margin: 0 auto;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
 	}
 </style>
