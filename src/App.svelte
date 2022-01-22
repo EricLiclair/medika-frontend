@@ -1,8 +1,8 @@
 <script>
     import TableRow from './TableRow.svelte';
     import AddProduct from './AddProduct.svelte';
-
-    import {products, isLoading} from './store.js'
+    import SearchProducts from './SearchProducts.svelte';
+    import {products, isLoading, productset} from './store.js'
 
     let url = 'https://port-8000-mdkbzr-diliga8356426146.codeanyapp.com/api/v1/products';
     const getProducts = () => {
@@ -12,6 +12,7 @@
         .then((data) => {
             isLoading.set(false);
             products.set(data);
+            productset.set(data);
         })
         .catch((err) => {
             console.log(err);
@@ -21,6 +22,7 @@
     getProducts();
 </script>
 
+<SearchProducts />
 <main>
     <table>
         <tr>
@@ -31,7 +33,7 @@
             <th>Tools</th>
         </tr>
     {#if $products.length > 0}
-        {#each $products as product (product.id)}
+        {#each $products.slice(0, 300) as product (product.id)}
             <TableRow {product}/>
         {/each}
     {:else if $isLoading}

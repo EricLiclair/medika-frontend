@@ -11,7 +11,7 @@
 
 </script>
 
-<main>
+<main style="margin: 1rem 0;">
     <button on:click={showModal}>add new product</button>
 
     <!-- The Modal -->
